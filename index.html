@@ -166,7 +166,7 @@
 <h2 id="尝试ping通两台虚拟机"><a href="#尝试ping通两台虚拟机" class="headerlink" title="尝试ping通两台虚拟机"></a>尝试ping通两台虚拟机</h2><pre><code>首先找到虚拟机的IP地址，可以使用命令ip addr show，或者ifconfig，使用后者可能需要安装网络工具，使用命令sudo apt install net-tools。</code></pre><p>得到结果如下：Ub0地址为192.168.1.101，Ub1地址为：192.168.1.105</p>
 <p><img src="./1.png" alt> </p>
 <pre><code>确定两台主机的IP 地址后，两台机互相ping对方的IP，可连通：</code></pre><p><img src="./3.png" alt></p>
-<pre><code>下面再通过命令sudo vim /etc/hostname和sudo vim /etc/hosts 修改主机名查询静态表和主机名字，（没有安装vim 的先安装vim，命令：sudo apt install vim，这里vim的使用不详述了。），修改如下：第二行注释掉，加上三四行的虚拟机和IP地址；主机名字改成方便记忆方便敲的，改完之后reboot重启就行。</code></pre><p><img src="./5.png" alt></p>
+<pre><code>下面再通过命令sudo vim /etc/hostname和sudo vim /etc/hosts 修改主机名查询静态表和主机名字，（没有安装vim 的先安装vim，命令：sudo apt install vim，这里vim的使用不详述了。），修改如下：hosts中第二行注释掉，在三四行里加上ub0和ub1的虚拟机和它们对应的IP地址；hostname主机名字改成方便记忆方便敲的，改完之后reboot重启就行。</code></pre><p><img src="./5.png" alt></p>
 <h2 id="nfs（Network-File-System-NFS-网络文件系统）安装"><a href="#nfs（Network-File-System-NFS-网络文件系统）安装" class="headerlink" title="nfs（Network File System(NFS)网络文件系统）安装"></a>nfs（Network File System(NFS)网络文件系统）安装</h2><pre><code>1.主节点/ub0 安装服务器端，sudo apt install nfs-server；
 
 2.从节点/ub1 安装客户端，sudo apt install nfs-client。
@@ -181,8 +181,6 @@
 
 6.从节点/ub1 创建一个share目录：mkdir share，希望把主节点上共享的文件夹挂载到从节点的这个目录来：
 sudo mount ub0:/home/hzm/test_share /home/hzm/share
-
-在从节点桌面也可以看到：![](8.png)
 
 到这里其实已经挂载完成了，可以试试在主节点上进入共享文件夹：cd /home/hzm/test_share，然后创建一个文件：touch t1.txt，再到从节点上进入挂载好了的文件夹：cd share，然后查看列表：ls ，就可以看到t1.txt已经在文件夹中了</code></pre><p><img src="./6.png" alt> <img src="./7.png" alt></p>
 <hr>
