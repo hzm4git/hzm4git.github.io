@@ -60,8 +60,6 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
-	        
 			</ul>
 		</nav>
 		<nav class="header-smart-menu">
@@ -112,8 +110,6 @@
 			
 				
 			
-				
-			
 			
 			
 			<nav class="header-nav">
@@ -128,9 +124,7 @@
 				<ul style="width: 50%">
 				
 				
-					<li style="width: 50%"><a href="/">主页</a></li>
-		        
-					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+					<li style="width: 100%"><a href="/">主页</a></li>
 		        
 				</ul>
 			</nav>
@@ -147,30 +141,52 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-我的第一篇博客" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">我的第一篇博客</a>
+      <a class="article-title" href="/2020/07/12/1/">初学集群与分布式编程</a>
     </h1>
   
 
         
-        <a href="/2020/07/07/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/" class="archive-article-date">
-  	<time datetime="2020-07-07T03:54:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
+        <a href="/2020/07/12/1/" class="archive-article-date">
+  	<time datetime="2020-07-12T05:43:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-12</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p>面向对象特性<br>继承、封装、多态</p>
+        <p>最近开始接触学习集群与分布式编程，希望可以搭建一个有两台电脑的集群（两台电脑一台作为主节点，另一台作为从节点），完成共享文件夹的功能，希望当主节点在共享文件夹中放文件，在从节点处可以看得到主节点处放入的文件。</p>
+<h2 id="在Virtual-Machines上，创建两个Ubuntu-64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图："><a href="#在Virtual-Machines上，创建两个Ubuntu-64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图：" class="headerlink" title="在Virtual Machines上，创建两个Ubuntu 64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图："></a>在Virtual Machines上，创建两个Ubuntu 64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图：</h2><p><img src="./0.png" alt></p>
+<h2 id="尝试ping通两台虚拟机"><a href="#尝试ping通两台虚拟机" class="headerlink" title="尝试ping通两台虚拟机"></a>尝试ping通两台虚拟机</h2><pre><code>首先找到虚拟机的IP地址，可以使用命令ip addr show，或者ifconfig，使用后者可能需要安装网络工具，使用命令sudo apt install net-tools。</code></pre><p>得到结果如下：Ub0地址为192.168.1.101，Ub1地址为：192.168.1.105</p>
+<p><img src="./1.png" alt> </p>
+<pre><code>确定两台主机的IP 地址后，两台机互相ping对方的IP，可连通：</code></pre><p><img src="./3.png" alt></p>
+<pre><code>下面再通过命令sudo vim /etc/hostname和sudo vim /etc/hosts 修改主机名查询静态表和主机名字，（没有安装vim 的先安装vim，命令：sudo apt install vim，这里vim的使用不详述了。），修改如下：第二行注释掉，加上三四行的虚拟机和IP地址；主机名字改成方便记忆方便敲的，改完之后reboot重启就行。</code></pre><p><img src="./5.png" alt></p>
+<h2 id="nfs（Network-File-System-NFS-网络文件系统）安装"><a href="#nfs（Network-File-System-NFS-网络文件系统）安装" class="headerlink" title="nfs（Network File System(NFS)网络文件系统）安装"></a>nfs（Network File System(NFS)网络文件系统）安装</h2><pre><code>1.主节点/ub0 安装服务器端，sudo apt install nfs-server；
+
+2.从节点/ub1 安装客户端，sudo apt install nfs-client。
+
+3.主节点/ub0 创建一个test_share目录：mkdir test_share ，
+
+4.到exports文件中：sudo vim /etc/exports 添加命令/home/hzm/test_share *(rw,sync) 
+
+这里注意：在/etc/exports中，发现部分目录对于用户来说是没有权限执行的，所以建议像给出的命令那样放在用户的家目录中。特别是如果遇到Job for nfs-server.service canceled的话。
+
+5.添加完成后，重启nfs的服务器：service nfs-kernel-server restart
+
+6.从节点/ub1 创建一个share目录：mkdir share，希望把主节点上共享的文件夹挂载到从节点的这个目录来：
+sudo mount ub0:/home/hzm/test_share /home/hzm/share
+
+在从节点桌面也可以看到：![](8.png)
+
+到这里其实已经挂载完成了，可以试试在主节点上进入共享文件夹：cd /home/hzm/test_share，然后创建一个文件：touch t1.txt，再到从节点上进入挂载好了的文件夹：cd share，然后查看列表：ls ，就可以看到t1.txt已经在文件夹中了</code></pre><p><img src="./6.png" alt> <img src="./7.png" alt></p>
 <hr>
-<h2 id="C"><a href="#C" class="headerlink" title="C++"></a>C++</h2><hr>
-<h2 id="author"><a href="#author" class="headerlink" title="author"></a>author</h2><p>黄志敏</p>
+<h1 id="author"><a href="#author" class="headerlink" title="author"></a>author</h1><p>黄志敏</p>
 <hr>
 
       
@@ -184,82 +200,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/07/hello-world/" class="archive-article-date">
-  	<time datetime="2020-07-07T03:51:59.080Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/hello-world/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/07/12/1/">展开全文 >></a>
         </p>
       
 
