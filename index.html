@@ -162,7 +162,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>最近开始接触学习集群与分布式编程，希望可以搭建一个有两台电脑的集群（两台电脑一台作为主节点，另一台作为从节点），完成共享文件夹的功能，希望当主节点在共享文件夹中放文件，在从节点处可以看得到主节点处放入的文件。</p>
-<h2 id="在Virtual-Machines上，创建两个Ubuntu-64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图："><a href="#在Virtual-Machines上，创建两个Ubuntu-64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图：" class="headerlink" title="在Virtual Machines上，创建两个Ubuntu 64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图："></a>在Virtual Machines上，创建两个Ubuntu 64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图：</h2><p><img src="./0.png" alt></p>
+<h2 id="在Virtual-Machines上，创建两个Ubuntu-64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图："><a href="#在Virtual-Machines上，创建两个Ubuntu-64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图：" class="headerlink" title="在Virtual Machines上，创建两个Ubuntu 64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图："></a>在Virtual Machines上，创建两个Ubuntu 64位的虚拟机（Ubuntu版本可以一样也可以不同），分别命名为Ub0和Ub1，配置如下图：</h2><p><img src="./0.png" alt> </p>
 <h2 id="尝试ping通两台虚拟机"><a href="#尝试ping通两台虚拟机" class="headerlink" title="尝试ping通两台虚拟机"></a>尝试ping通两台虚拟机</h2><pre><code>首先找到虚拟机的IP地址，可以使用命令ip addr show，或者ifconfig，使用后者可能需要安装网络工具，使用命令sudo apt install net-tools。</code></pre><p>得到结果如下：Ub0地址为192.168.1.101，Ub1地址为：192.168.1.105</p>
 <p><img src="./1.png" alt> </p>
 <pre><code>确定两台主机的IP 地址后，两台机互相ping对方的IP，可连通：</code></pre><p><img src="./3.png" alt></p>
